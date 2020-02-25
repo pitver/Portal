@@ -1,5 +1,7 @@
 package ru.vershinin.TKK_Portal.securiry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,6 +19,8 @@ import java.util.Optional;
 @Transactional
 public class UserAuthService implements UserDetailsService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserAuthService.class);
+
     private final UserRepository userRepository;
 
     @Autowired
@@ -26,14 +30,13 @@ public class UserAuthService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> optUser = userRepository.getUserByUsername(username);
-        if (!optUser.isPresent()) {
-            throw new UsernameNotFoundException("User not found");
-        }
-        return new org.springframework.security.core.userdetails.User(
-                optUser.get().getUsername(),
-                optUser.get().getPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority("USER"))
-        );
+        logger.info("Spring security loading user by name");
+
+        return userRepository.getUserByUsername(username)
+                .map(user -> new org.springframework.security.core.userdetails.User(
+                        user.getUsername(),
+                        user.getPassword(),
+                        Collections.singletonList(new SimpleGrantedAuthority("USER"))))
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }

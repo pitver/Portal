@@ -39,9 +39,9 @@ public class LoginController {
 
     @PostMapping("/register")
     public String registerNewUser(@ModelAttribute("user") @Valid UserRepr userRepr,
-                                                            BindingResult result) {
-
+                                  BindingResult result) {
         logger.info("New user {}", userRepr);
+
         if (result.hasErrors()) {
             return "register";
         }
@@ -49,6 +49,7 @@ public class LoginController {
             result.rejectValue("password", "", "Password not matching");
             return "register";
         }
+
         userService.create(userRepr);
         return "redirect:/login";
     }

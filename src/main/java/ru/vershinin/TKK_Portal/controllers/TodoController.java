@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import ru.vershinin.TKK_Portal.controllers.except.ResourceNotFoundException;
 import ru.vershinin.TKK_Portal.repr.ToDoRepr;
 import ru.vershinin.TKK_Portal.service.ToDoService;
 import ru.vershinin.TKK_Portal.service.UserService;
@@ -15,18 +16,17 @@ import ru.vershinin.TKK_Portal.service.UserService;
 import javax.validation.Valid;
 import java.util.List;
 
+import static ru.vershinin.TKK_Portal.securiry.Utils.getCurrentUser;
+
 
 @Controller
 public class TodoController {
 
     private ToDoService toDoService;
 
-    private UserService userService;
-
     @Autowired
-    public TodoController(ToDoService toDoService, UserService userService) {
+    public TodoController(ToDoService toDoService) {
         this.toDoService = toDoService;
-        this.userService = userService;
     }
 
     @GetMapping("")
@@ -36,8 +36,9 @@ public class TodoController {
 
     @GetMapping("/todo/all")
     public String allTodosPage(Model model) {
-        List<ToDoRepr> todos = toDoService.findToDosByUserId(userService.getCurrentUserId()
-                .orElseThrow(ResourceNotFoundException::new));
+        List<ToDoRepr> todos = getCurrentUser()
+                .map(toDoService::findToDoByUser_Username)
+                .orElseThrow(IllegalStateException::new);
         model.addAttribute("todos", todos);
         return "todoList";
     }
@@ -73,4 +74,3 @@ public class TodoController {
         return "redirect:/";
     }
 }
-
