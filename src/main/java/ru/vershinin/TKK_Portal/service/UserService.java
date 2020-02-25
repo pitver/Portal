@@ -8,6 +8,9 @@ import ru.vershinin.TKK_Portal.persist.repo.UserRepository;
 import ru.vershinin.TKK_Portal.repr.UserRepr;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
+
+import static ru.vershinin.TKK_Portal.securiry.Utils.getCurrentUser;
 
 @Service
 @Transactional
@@ -29,4 +32,11 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(userRepr.getPassword()));
         userRepository.save(user);
     }
+
+    public Optional<Long> getCurrentUserId() {
+        return getCurrentUser()
+                .flatMap(userRepository::getUserByUsername)
+                .map(User::getId);
+    }
 }
+

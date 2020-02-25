@@ -9,23 +9,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-   <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">-->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"/>
     <link rel="stylesheet" type="text/css"
-	 href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
-
-	<!--<link rel="stylesheet" type="text/css"
-	 href="../static/css/all.css" th:href="@{/css/all.css}" />-->
-    <!--<link rel="stylesheet" type="text/css"
-	 href="../static/css/font-awesome.min.css" th:href="@{/css/font-awesome.min.css}" />-->
+          href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"/>
     <title>ToDo list application</title>
 </head>
 
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" th:href="@{/}">ToDo</a>
+    <a class="navbar-brand" th:href="@{/todo/all}">ToDo</a>
 
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,9 +33,7 @@
         </ul>
 
         <form class="form-inline my-2 my-lg-0" th:action="@{/logout}" method="post">
-            <a class="btn btn-outline-success my-2 my-sm-0" th:href="@{/login}">Login</a>
             <button sec:authorize="isAuthenticated()" class="btn btn-outline-success my-2 my-sm-0">Logout</button>
-            <a class="btn btn-outline-success my-2 my-sm-0" th:href="@{/register}">Register</a>
         </form>
     </div>
 </nav>
@@ -50,7 +41,7 @@
 <div class="container">
     <div class="row py-2">
         <div class="col-12">
-            <a class="btn btn-primary" th:href="@{/todo}">Add Todo</a>
+            <a class="btn btn-primary" th:href="@{/todo/create}">Add Todo</a>
         </div>
 
         <div class="col-12">
@@ -65,34 +56,17 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <th scope="row">1</th>
-                    <td>Bootstrap 4 CDN and Starter Template</td>
-                    <td>Cristina</td>
-                    <td>01.01.2020</td>
-                    <td>
-                        <a class="btn btn-success" th:href="@{/todo}"><i class="fas fa-edit"></i></a>
-                        <a class="btn btn-danger" href="#"><i class="far fa-trash-alt"></i></a>
-                    </td>
+                <tr th:if="${todos.empty}">
+                    <td class="text-center" colspan="5">No data</td>
                 </tr>
-                <tr>
-                    <th scope="row">2</th>
-                    <td>Bootstrap Grid 4 Tutorial and Examples</td>
-                    <td>Cristina</td>
-                    <td>01.01.2020</td>
+                <tr th:each="todo : ${todos}">
+                    <th scope="row" th:text="*{todo.id}">1</th>
+                    <td th:text="${todo.description}">Bootstrap 4 CDN and Starter Template</td>
+                    <td th:text="${todo.username}">Cristina</td>
+                    <td th:text="${todo.targetDate}">01.01.2020</td>
                     <td>
-                        <a class="btn btn-success" th:href="@{/todo}"><i class="fas fa-edit"></i></a>
-                        <a class="btn btn-danger" href="#"><i class="far fa-trash-alt"></i></a>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">3</th>
-                    <td>Bootstrap Flexbox Tutorial and Examples</td>
-                    <td>Cristina</td>
-                    <td>01.01.2020</td>
-                    <td>
-                        <a class="btn btn-success" th:href="@{/todo}"><i class="fas fa-edit"></i></a>
-                        <a class="btn btn-danger" href="#"><i class="far fa-trash-alt"></i></a>
+                        <a class="btn btn-success" th:href="@{/todo/{id}(id=${todo.id})}"><i class="fas fa-edit"></i></a>
+                        <a class="btn btn-danger" th:href="@{/todo/delete/{id}(id=${todo.id})}"><i class="far fa-trash-alt"></i></a>
                     </td>
                 </tr>
                 </tbody>
